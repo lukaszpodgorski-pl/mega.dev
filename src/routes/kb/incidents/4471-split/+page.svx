@@ -1,0 +1,72 @@
+---
+layout: runbook
+title: '#4471 split · three problems, not one'
+owner: support desk
+status: open
+reviewed: 2026-11-03
+signature: v1.eyJzdWIiOiI2OTQzIiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTM2OTc0ODYsImV4cCI6MTc5Mzc4Mzg4Nn0.S_L4VVAP2qJM3FrXXXSHyKHxxO_ObGGOVSlhLSUm5Co
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+[#4471](/kb/incidents/4471) is marked known: one issue, one fix queued. The reports in it do not
+say that. Read by tenant and by what each body describes, #4471 holds three problems. The queued
+parser fix closes only one of them.
+
+<Callout kind="warn">
+Not one issue. Fixing the parser leaves the booking-v3 hint and the one-day move open.
+</Callout>
+
+## What #4471 holds
+
+<ProblemTable
+  ticket={4471}
+  issues={{
+    parser: 'lukaszpodgorski-pl/mega.dev#1',
+    hint: 'lukaszpodgorski-pl/mega.dev#2',
+    'one-day': 'lukaszpodgorski-pl/mega.dev#3',
+  }}
+/>
+
+## The three problems
+
+**`parser`: the shared parser reads every date month first.** All our tenants write the day
+first, so 7 April comes out as 4 July. This is the bug #4471 names and the fix that is queued.
+It comes in through the app, email and the booking-v2 form.
+
+**`hint`: booking-v3 prints `MM/DD/YYYY` under its date field.** Alder Physio, Copper Studio and
+Pale Harbour run booking-v3. Their people type what the hint tells them, month first, and the
+form reads it the tenant's way, day first. The symptom looks the same as `parser`, a swapped day
+and month, but the parser fix does not touch it: only reports that came through the v3 form
+belong here. The form's hint, or the way it reads the field, needs its own change.
+
+**`one-day`: the date moves by one day, not by a swap.** Tuesday 12 May shows as Monday 11 May
+(R-41202). A client in Lisbon got Tuesday and one in Toronto got Monday for the same meeting
+(R-41344). An invite arrived before its booking (R-41236). Every June booking was one day off
+(R-41209). These read as a time-zone shift. The desk already noted them as one-day moves, then
+filed them under `parser` by tenant. No parser or hint fix moves a date back by one day.
+
+## How this was counted
+
+- One id, one report: the export has rows twice where its pages overlap.
+- The cause comes from the tenant and the way in (`causes.ts`), not from the intake tag. Intake
+  guessed from the reporter's browser and got many of them wrong.
+- One-day moves are the desk's own list (`desk-notes.json`), checked against every body: they are
+  the only reports whose dates differ by one day and not by a day/month swap.
+- Subjects say nothing about the cause. Five subjects turn up under all three problems, which is
+  why merging by subject ([decision 0001](/kb/decisions/0001-dedupe-by-subject)) put
+  them in one ticket.
+
+## What changes for the desk
+
+- #4471 stays the `parser` ticket. Close it when the parser fix ships, not before: then check
+  that new booking-v3 form reports and one-day moves still arrive, and file them under their own
+  tickets.
+- Before merging a date report, ask two things the subject cannot tell you: did it come through
+  a booking-v3 form, and did the date swap or move by one day?
+
+<RenderStamp {signature} />
