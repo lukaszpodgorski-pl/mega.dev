@@ -46,6 +46,9 @@
 
 <ul class="m">
   <li>{split.rows - split.unique} rows are the same report twice (the export pages overlap); counted once.</li>
+  {#each split.groups.filter((g) => g.problem === 'one-day') as g (g.problem)}
+    <li>The {g.reports.length} <code>one-day</code> reports are also counted under the cause their tenant files them under, as the desk counts them.</li>
+  {/each}
   {#each split.groups as g (g.problem)}
     {@const n = mistagged(g)}
     {#if n}<li>{n} of the {g.reports.length} <code>{g.problem}</code> reports carry another intake tag.</li>{/if}

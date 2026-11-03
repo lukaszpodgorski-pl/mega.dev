@@ -47,8 +47,9 @@ belong here. The form's hint, or the way it reads the field, needs its own chang
 **`one-day`: the date moves by one day, not by a swap.** Tuesday 12 May shows as Monday 11 May
 (R-41202). A client in Lisbon got Tuesday and one in Toronto got Monday for the same meeting
 (R-41344). An invite arrived before its booking (R-41236). Every June booking was one day off
-(R-41209). These read as a time-zone shift. The desk already noted them as one-day moves, then
-filed them under `parser` by tenant. No parser or hint fix moves a date back by one day.
+(R-41209). These read as a time-zone shift. The desk already noted them as one-day moves and filed
+them under `parser` by tenant; they stay counted there too. No parser or hint fix moves a date
+back by one day.
 
 ## How this was counted
 
